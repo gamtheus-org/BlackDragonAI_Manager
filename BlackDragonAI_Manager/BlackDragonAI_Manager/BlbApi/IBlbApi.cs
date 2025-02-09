@@ -65,7 +65,7 @@ namespace BlackDragonAI_Manager.BlbApi
             [Body] StreamPlanning streamPlanning);
 
         [Get("/streamplannings")]
-        Task<IEnumerable<StreamPlanning>> GetStreamPlannings([Header("X-Access-Token")] string authToken);
+        Task<IEnumerable<StreamPlanning>> GetStreamPlannings();
 
         [Get("/streamplannings/{id}")]
         Task<StreamPlanning> GetStreamPlanningById([Header("X-Access-Token")] string authToken, long id);
@@ -78,6 +78,9 @@ namespace BlackDragonAI_Manager.BlbApi
 
         [Put("/streamplannings/discord/load")]
         Task LoadDiscordStreamPlannings([Header("X-Access-Token")] string authToken);
+        
+        [Post("/streamplannings/discord/share")]
+        Task SharePlanningUpdate([Header("X-Access-Token")] string authToken);
 
         [Post("/reconnect")]
         Task Reconnect([Header("X-Access-Token")] string authToken);

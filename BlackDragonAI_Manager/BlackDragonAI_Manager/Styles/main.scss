@@ -1,13 +1,13 @@
 ﻿$color-primary: #292826; // Dark grey
-$color-secondary: #e3e3e3; // White-isch
-$color-tertiary: #73008a; // Purple
+$color-secondary: #FFFFFF; // White-isch
+$color-tertiary: #FFAA00; // Yellow
 
 
 body {
     background: $color-primary;
 }
 
-h1, h3, p, label {
+h1, h3, p {
     color: $color-secondary;
 }
 
@@ -24,4 +24,8 @@ button {
 .card {
     background: $color-tertiary;
     margin-bottom: 20px;
+}
+
+.date-picker-style.h1, .date-picker-style.h3, .date-picker-style.p, .date-picker-style.label {
+    color: #000000;
 }

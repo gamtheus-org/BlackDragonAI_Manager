@@ -35,7 +35,7 @@ namespace BlackDragonAI_Manager
 
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddRefitClient<IBlbApi>(refitSettings).ConfigureHttpClient(httpClient =>
-                httpClient.BaseAddress = new Uri("http://blackdragonai.nl/api"));
+                httpClient.BaseAddress = new Uri("https://blackdragonai.nl/api"));
 
             builder.Services.AddSingleton<NotificationManager>();
             builder.Services.AddSingleton<BlbApiHandler>();

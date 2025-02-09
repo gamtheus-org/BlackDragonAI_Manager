@@ -1,5 +1,4 @@
 ﻿@page "/commands"
-@page "/"
 @inject BlbApiHandler BlbApiHandler
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService LocalStorageService
@@ -7,9 +6,9 @@
 <h1>Commands</h1>
 
 <div>
-    <label>
+    <p>
         <input type="text" @bind-value="@_searchString" />
-    </label>
+    </p>
     <button @onclick="SearchHandler">Search</button>
     @if (!string.IsNullOrEmpty(_searchString))
     {
