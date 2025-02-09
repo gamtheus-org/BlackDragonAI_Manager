@@ -8,7 +8,7 @@ RUN dotnet build "BlackDragonAI_Manager/BlackDragonAI_Manager.csproj" -c Release
 FROM build AS publish
 RUN dotnet publish "BlackDragonAI_Manager/BlackDragonAI_Manager.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-FROM nginx:alpine AS final
+FROM nginx:latest AS final
 WORKDIR /usr/share/nginx/html
 COPY --from=publish /app/publish/wwwroot .
 COPY nginx.conf /etc/nginx/nginx.conf
