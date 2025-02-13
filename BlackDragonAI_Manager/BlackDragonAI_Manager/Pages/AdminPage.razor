@@ -24,9 +24,7 @@
         </p>
 }
 
-<form action="@_twitchAuthUrl">
-    <input type="submit" value="Re-authorize" />
-</form>
+<button @onclick="GoToTwitchAuthUrl">Re-authorize</button>
 
 @code {
     private IEnumerable<User> Users = new User[0];
@@ -55,6 +53,6 @@
     public async Task GoToTwitchAuthUrl()
     {
         var res = await BlbApiHandler.GetAuthUrl();
-        
+        NavigationManager.NavigateTo(res.Url);
     }
 }
