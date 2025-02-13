@@ -60,7 +60,7 @@
     @if(_isAlreadyLoggedIn && _authorizationLevel >= EAuthorizationLevel.ADMIN)
     {
         <div style="width: 100%; margin-bottom: 30px; bottom: 0px; position: absolute">
-            <button class="nav-item px-3" @onclick="ReconnectBot" style="width: 50%; margin: auto; display: block;">
+            <button class="nav-item px-3" @onclick="ReconnectBot" style="width: 50%; margin: auto; display: block; background-color: #292826">
                 Reconnect bot
             </button>
         </div>
@@ -81,8 +81,6 @@
         LogStatusString = _isAlreadyLoggedIn ? "out" : "in";
         HandleAuthenticationStatusAsync(_isAlreadyLoggedIn);
         LoggedInStatusManager.UserLoggedIn += HandleAuthenticationStatusAsync;
-        this._isAlreadyLoggedIn = true;
-        this._authorizationLevel = EAuthorizationLevel.ADMIN;
     }
 
     private async void HandleAuthenticationStatusAsync(bool loggedIn)

@@ -11,8 +11,6 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Refit;
 
 namespace BlackDragonAI_Manager
@@ -24,18 +22,11 @@ namespace BlackDragonAI_Manager
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
 
-            var contentSerializer = new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
-            var refitSettings = new RefitSettings()
-            {
-                ContentSerializer = new JsonContentSerializer(contentSerializer)
-            };
+            var refitSettings = new RefitSettings(new NewtonsoftJsonContentSerializer());
 
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddRefitClient<IBlbApi>(refitSettings).ConfigureHttpClient(httpClient =>
-                httpClient.BaseAddress = new Uri("http://blackdragonai.nl/api"));
+                httpClient.BaseAddress = new Uri("https://blackdragonai.nl/api"));
 
             builder.Services.AddSingleton<NotificationManager>();
             builder.Services.AddSingleton<BlbApiHandler>();
