@@ -22,7 +22,7 @@ namespace BlackDragonAI_Manager
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
 
-            var refitSettings = new RefitSettings();
+            var refitSettings = new RefitSettings(new NewtonsoftJsonContentSerializer());
 
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddRefitClient<IBlbApi>(refitSettings).ConfigureHttpClient(httpClient =>
