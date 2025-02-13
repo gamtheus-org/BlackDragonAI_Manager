@@ -24,8 +24,13 @@
         </p>
 }
 
+<form action="@_twitchAuthUrl">
+    <input type="submit" value="Re-authorize" />
+</form>
+
 @code {
     private IEnumerable<User> Users = new User[0];
+    private string _twitchAuthUrl;
 
     protected override async Task OnInitializedAsync()
     {
@@ -36,6 +41,8 @@
         }
 
         this.Users = await this.BlbApiHandler.GetUsers();
+        var twitchAuthInfo = await BlbApiHandler.GetAuthUrl();
+        _twitchAuthUrl = twitchAuthInfo.Url;
     }
 
     public async Task SaveAuthLevel(string username, EAuthorizationLevel authLevel)
@@ -43,5 +50,11 @@
         await BlbApiHandler.UpdateAuthorizationLevel(username, authLevel);
         NotificationManager.SetSuccessNotification($"{username} has been given the authorization level {Enum.GetName(typeof(EAuthorizationLevel), authLevel).ToLower()}");
         this.Users = await this.BlbApiHandler.GetUsers();
+    }
+
+    public async Task GoToTwitchAuthUrl()
+    {
+        var res = await BlbApiHandler.GetAuthUrl();
+        
     }
 }

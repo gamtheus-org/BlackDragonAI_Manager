@@ -84,5 +84,8 @@ namespace BlackDragonAI_Manager.BlbApi
 
         [Post("/reconnect")]
         Task Reconnect([Header("X-Access-Token")] string authToken);
+
+        [Get("/auth")]
+        Task<TwitchAuthInformation> GetAuthUrl([Header("X-Access-Token")] string authToken);
     }
 }

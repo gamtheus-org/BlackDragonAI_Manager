@@ -125,6 +125,9 @@ namespace BlackDragonAI_Manager.BlbApi
         public async Task SharePlanningUpdate() => 
             await (await CheckAuthentication()).SharePlanningUpdate(this._jwt);
 
+        public async Task<TwitchAuthInformation> GetAuthUrl() =>
+            await (await CheckAuthentication()).GetAuthUrl(this._jwt);
+
         public async Task<IBlbApi> CheckAuthentication()
         {
             const string storageKey = "user";
