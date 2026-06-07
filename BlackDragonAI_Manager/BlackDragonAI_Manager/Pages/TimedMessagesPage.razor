@@ -58,24 +58,24 @@
 
         <h3>New timed message for:</h3>
         <p>
-            <label>
+            <p>
                 Commands: <InputSelect @bind-Value="_newTimedMessage.Command">
                     @foreach (var command in _commandsToMakeTimedMessageFor)
                     {
                         <option value="@command">@command</option>
                     }
                 </InputSelect>
-            </label>
+            </p>
         </p>
         <p>
-            <label>
+            <p>
                 Interval: <InputNumber @bind-Value="_newTimedMessage.IntervalInMinutes" />
-            </label>
+            </p>
         </p>
         <p>
-            <label>
+            <p>
                 Offset: <InputNumber @bind-Value="_newTimedMessage.OffsetInMinutes" />
-            </label>
+            </p>
         </p>
         <button type="submit">Add</button>
     </EditForm>

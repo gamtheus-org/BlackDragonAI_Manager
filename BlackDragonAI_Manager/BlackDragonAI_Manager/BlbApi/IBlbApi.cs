@@ -65,7 +65,7 @@ namespace BlackDragonAI_Manager.BlbApi
             [Body] StreamPlanning streamPlanning);
 
         [Get("/streamplannings")]
-        Task<IEnumerable<StreamPlanning>> GetStreamPlannings([Header("X-Access-Token")] string authToken);
+        Task<IEnumerable<StreamPlanning>> GetStreamPlannings();
 
         [Get("/streamplannings/{id}")]
         Task<StreamPlanning> GetStreamPlanningById([Header("X-Access-Token")] string authToken, long id);
@@ -78,8 +78,24 @@ namespace BlackDragonAI_Manager.BlbApi
 
         [Put("/streamplannings/discord/load")]
         Task LoadDiscordStreamPlannings([Header("X-Access-Token")] string authToken);
+        
+        [Post("/streamplannings/discord/share")]
+        Task SharePlanningUpdate([Header("X-Access-Token")] string authToken);
+
+        #region BannedTerms
+
+        [Put("/banned-terms")]
+        Task SaveBannedTerms([Header("X-Access-Token")] string authToken, string[] terms);
+
+        [Get("/banned-terms")]
+        Task<string[]> GetBannedTerms([Header("X-Access-Token")] string authToken);
+
+        #endregion
 
         [Post("/reconnect")]
         Task Reconnect([Header("X-Access-Token")] string authToken);
+
+        [Get("/auth")]
+        Task<TwitchAuthInformation> GetAuthUrl([Header("X-Access-Token")] string authToken);
     }
 }

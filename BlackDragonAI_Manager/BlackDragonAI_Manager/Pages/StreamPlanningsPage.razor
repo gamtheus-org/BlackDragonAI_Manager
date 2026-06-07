@@ -1,15 +1,20 @@
 ﻿@page "/streams"
-@inject BlbApiHandler BlbApiHandler
-@inject ILocalStorageService LocalStorageService
-@inject NavigationManager NavigationManager
+@page "/"
+@inject BlbApiHandler _blbApiHandler
+@inject ILocalStorageService _localStorageService
+@inject NavigationManager _navigationManager
+@inject NotificationManager _notificationManager
 
 <h1>Streams</h1>
 
 @if (_isAdminOrHigher)
 {
     <div style="position: absolute; right: 15px; top: 15px; width: fit-content;">
+        <button @onclick="ClearStreamPlanning" style="min-width: 70px; min-height: 40px;">Remove entire planning</button>
+        <button @onclick="RemoveAllPastStreamPlannings" style="min-width: 70px; min-height: 40px;">Remove all past stream plannings</button>
         <button @onclick="LoadDiscordStreamPlanning" style="min-width: 70px; min-height: 40px;">Load discord</button>
         <button @onclick="UpdateDiscordStreamPlannings" style="min-width: 70px; min-height: 40px;">Update discord</button>
+        <button @onclick="SharePlanningUpdate" style="min-width: 70px; min-height: 40px;">Share stream planning update</button>
     </div>
 }
 
@@ -18,38 +23,68 @@
     {
         @foreach (var sp in _streamPlannings)
         {
-            <div class="card text-white col-lg-5 col-md-12 col-sm-12" @onclick="() => GoToEditPage(sp.Id)" style="cursor: pointer !important">
-                <div class="card-body card-space">
-                    <h3 class="card-title">@sp.Game - @sp.StreamType</h3>
-                    <h5>@GetDayAbbreviation(sp.Date.DayOfWeek). @sp.Date.Day-@sp.Date.Month | @sp.TimeSlot</h5>
-                    <p>@sp.GameType</p>
-                    @* embed yt iFrame *@
-                    <div style="position: relative; width: 100%; overflow: hidden; padding-top: 56.25%;">
-                        <iframe style="position: absolute; top: 0; left: 0; bottom: 0; right: 0; width: 100%; height: 100%; border: none;"
-                                                    src="@ConvertYoutubeUriToEmbeddedUri(sp.TrailerUri)" allow="encrypted-media"></iframe>
+            @if (_isAdminOrHigher)
+            {
+                <div class="card text-white col-lg-5 col-md-12 col-sm-12" @onclick="() => GoToEditPage(sp.Id)" style="cursor: pointer !important">
+                    <div class="card-body card-space">
+                        <h3 class="card-title">@sp.Game - @sp.StreamType</h3>
+                        <h5>@GetDayAbbreviation(sp.Date.DayOfWeek). @sp.Date.Day-@sp.Date.Month | @sp.TimeSlot</h5>
+                        <p>@sp.GameType</p>
+                        @if (!string.IsNullOrEmpty(sp.TrailerUri.Trim()))
+                        {
+                            @* embed yt iFrame *@
+                            <div style="position: relative; width: 100%; overflow: hidden; padding-top: 56.25%;">
+                                <iframe style="position: absolute; top: 0; left: 0; bottom: 0; right: 0; width: 100%; height: 100%; border: none;"
+                                        src="@ConvertYoutubeUriToEmbeddedUri(sp.TrailerUri)" allow="encrypted-media"></iframe>
+                            </div>
+                        }
                     </div>
                 </div>
-            </div>
+            }
+            else
+            {
+                <div class="card text-white col-lg-5 col-md-12 col-sm-12">
+                    <div class="card-body card-space">
+                        <h3 class="card-title">@sp.Game - @sp.StreamType</h3>
+                        <h5>@GetDayAbbreviation(sp.Date.DayOfWeek). @sp.Date.Day-@sp.Date.Month | @sp.TimeSlot</h5>
+                        <p>@sp.GameType</p>
+                        @if (!string.IsNullOrEmpty(sp.TrailerUri.Trim()))
+                        {
+                            @* embed yt iFrame *@
+                            <div style="position: relative; width: 100%; overflow: hidden; padding-top: 56.25%;">
+                                <iframe style="position: absolute; top: 0; left: 0; bottom: 0; right: 0; width: 100%; height: 100%; border: none;"
+                                        src="@ConvertYoutubeUriToEmbeddedUri(sp.TrailerUri)" allow="encrypted-media"></iframe>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
         }
     }
 </div>
 
+
+@if (_isAdminOrHigher)
+{
+    <img src="images/PlusIcon.png" @onclick="() => GoToEditPage(0)" style="position: fixed; z-index: 1; bottom: 0; right: 0; width: 215px; height: 215px; margin-right: 30px; margin-bottom: 30px; cursor: pointer">
+}
+
 @code {
-    private IEnumerable<StreamPlanning> _streamPlannings;
+    private List<StreamPlanning> _streamPlannings;
     private bool _isAdminOrHigher = false;
 
     protected override async Task OnInitializedAsync()
     {
         await RetrieveStreamPlannings();
-        this._isAdminOrHigher = await this.LocalStorageService.IsLoggedInAndMeetsAuthorizationLevel(EAuthorizationLevel.ADMIN);
+        this._isAdminOrHigher = await this._localStorageService.IsLoggedInAndMeetsAuthorizationLevel(EAuthorizationLevel.ADMIN);
     }
 
     private async Task RetrieveStreamPlannings()
     {
-        this._streamPlannings = await this.BlbApiHandler.GetStreamPlannings();
+        this._streamPlannings = (await this._blbApiHandler.GetStreamPlannings()).OrderBy(sp => sp.Date).ToList();
     }
     
-    private string GetDayAbbreviation(DayOfWeek dayOfWeek) => dayOfWeek switch
+    private static string GetDayAbbreviation(DayOfWeek dayOfWeek) => dayOfWeek switch
     {
         DayOfWeek.Monday => "Ma",
         DayOfWeek.Tuesday => "Di",
@@ -63,7 +98,12 @@
 
     private string ConvertYoutubeUriToEmbeddedUri(string youtubeUri)
     {
-        var properUri = youtubeUri.Replace("youtu.be", "youtube.com");
+        var properUri = youtubeUri.Replace("youtu.be", "youtube.com").Replace("watch?v=", string.Empty).Replace("www.", string.Empty);
+        var abChannelParamIndex = properUri.LastIndexOf("&ab_channel=", StringComparison.InvariantCultureIgnoreCase);
+        if (abChannelParamIndex != -1)
+        {
+            properUri = properUri[..abChannelParamIndex];
+        }
         var indexOfLastSlash = properUri.LastIndexOf("/", StringComparison.InvariantCultureIgnoreCase);
         return properUri.Insert(indexOfLastSlash + 1, "embed/");
     }
@@ -71,18 +111,79 @@
     // Load the discord stream planning and parse them
     private async Task LoadDiscordStreamPlanning()
     {
-        await this.BlbApiHandler.LoadDiscordStreamPlannings();
-        await this.RetrieveStreamPlannings();
+        try
+        {
+            await this._blbApiHandler.LoadDiscordStreamPlannings();
+            await this.RetrieveStreamPlannings();
+        }
+        catch (Exception e)
+        {
+            _notificationManager.SetFailureNotification($"Something went wrong: {e.Message}");
+        }
     }
 
     // Writes the stream plannings in the database to the discord comment.
     private async Task UpdateDiscordStreamPlannings()
     {
-        await this.BlbApiHandler.UpdateDiscordStreamPlannings();
+        try
+        {
+            await this._blbApiHandler.UpdateDiscordStreamPlannings();
+        }
+        catch (Exception e)
+        {
+            _notificationManager.SetFailureNotification($"Something went wrong: {e.Message}");
+        }
     }
     
     private void GoToEditPage(long id)
     {
-        this.NavigationManager.NavigateTo($"streams/{id}");
+        this._navigationManager.NavigateTo($"streams/{id}");
+    }
+
+    private async Task SharePlanningUpdate()
+    {
+        try
+        {
+            await this._blbApiHandler.SharePlanningUpdate();
+            _notificationManager.SetSuccessNotification("Successfully shared the update of the stream planning");
+        }
+        catch (Exception e)
+        {
+            _notificationManager.SetFailureNotification($"Something went wrong: {e.Message}");
+        }
+    }
+
+    private async Task ClearStreamPlanning()
+    {
+        try
+        {
+            var deletionRequests = _streamPlannings.Select(sp => this._blbApiHandler.DeleteStreamPlanning(sp.Id));
+            await Task.WhenAll(deletionRequests);
+            this._streamPlannings.RemoveAll(_ => true);
+            StateHasChanged();
+            _notificationManager.SetSuccessNotification("Removed all planned streams");
+        }
+        catch (Exception e)
+        {
+            _notificationManager.SetFailureNotification($"Something went wrong: {e.Message}");
+        }
+    }
+
+    private async Task RemoveAllPastStreamPlannings()
+    {
+        var streamPlanningsToDelete = _streamPlannings.Where(sp => sp.Date.Date < DateTime.Now.Date);
+        try
+        {
+            var deletionRequests = streamPlanningsToDelete.Select(sp => 
+                this._blbApiHandler.DeleteStreamPlanning(sp.Id));
+            await Task.WhenAll(deletionRequests);
+            streamPlanningsToDelete.Select(sp => this._streamPlannings.Remove(sp));
+            StateHasChanged();
+            _notificationManager.SetSuccessNotification("Removed all past planned streams");
+        }
+        catch (Exception e)
+        {
+            _notificationManager.SetFailureNotification($"Something went wrong: {e.Message}");
+        }
     }
 }

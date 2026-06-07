@@ -1,0 +1,68 @@
+@page "/banned-terms"
+@inject BlbApiHandler BlbApiHandler
+@inject NotificationManager NotificationManager
+
+<h3 style="margin-top: 30px;">Banned terms</h3>
+<ul>
+    @foreach (var bannedTerm in BannedTerms)
+    {
+        <li style="color: white;">
+            <p>
+                @bannedTerm
+                <button style="background-color: red;" @onclick="() => DeleteBannedTerm(bannedTerm)">Remove</button>
+            </p>
+        </li>
+    }
+</ul>
+<EditForm model="@NewBannedTerm" OnSubmit="CreateBannedTerm">
+    @if (ErrorMessage != null)
+    {
+        <ul>
+            <li style="color: red;">
+                <p style="color: red;">@ErrorMessage</p>
+            </li>
+        </ul>
+    }
+
+    <p>
+        New banned term: 
+        <InputText @bind-Value="NewBannedTerm" />
+        <button type="submit">Add</button>
+    </p>
+</EditForm>
+
+@code {
+    public List<string> BannedTerms = new List<string>();
+
+    public string NewBannedTerm = "";
+    public string? ErrorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        BannedTerms = (await BlbApiHandler.GetBannedTermsAsync()).ToList();
+
+        await base.OnInitializedAsync();
+    }
+
+    public async Task DeleteBannedTerm(string bannedTerm)
+    {
+        BannedTerms.Remove(bannedTerm);
+        await BlbApiHandler.SaveBannedTermsAsync(BannedTerms.ToArray());
+        NotificationManager.SetSuccessNotification("Removed banned terms");
+    }
+
+    public async Task CreateBannedTerm()
+    {
+        if(BannedTerms.Contains(NewBannedTerm))
+        {
+            ErrorMessage = "That term is already banned";
+            return;
+        }
+
+        ErrorMessage = null;
+        BannedTerms.Add(NewBannedTerm);
+        await BlbApiHandler.SaveBannedTermsAsync(BannedTerms.ToArray());
+        NotificationManager.SetSuccessNotification("Updated banned terms");
+        NewBannedTerm = string.Empty;
+    }
+}

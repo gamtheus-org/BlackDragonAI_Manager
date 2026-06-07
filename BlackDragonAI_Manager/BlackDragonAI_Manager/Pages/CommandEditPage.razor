@@ -35,41 +35,35 @@ else
         <DataAnnotationsValidator />
         <ValidationSummary />
         <p>
-            <label>
-                Command name:
-                @if (InEditingMode)
-                {
-                    @Command.Command
-                }
-                else
-                {
-                    <InputText @bind-Value="Command.Command"></InputText>
-                }
-            </label>
+            Command name:
+            @if (InEditingMode)
+            {
+                @Command.Command
+            }
+            else
+            {
+                <InputText @bind-Value="Command.Command"></InputText>
+            }
         </p>
-        <p>
-            <label style="text-align: center; position: relative; top: -40px;">
+        <div>
+            <p>
                 Message:
-            </label>
+            </p>
 
             <InputTextArea style="width: 400px; height: 80px;" @bind-Value="Command.Message" />
+        </div>
+        <p>
+            Permission:
+            <InputSelect @bind-Value="Command.Permission">
+                <option value="@EPermission.EVERYONE">Everyone</option>
+                <option value="@EPermission.SUBS">Subs</option>
+                <option value="@EPermission.MODS">Moderators</option>
+                <option value="@EPermission.ADMIN">Admins</option>
+            </InputSelect>
         </p>
         <p>
-            <label>
-                Permission:
-                <InputSelect @bind-Value="Command.Permission">
-                    <option value="@EPermission.EVERYONE">Everyone</option>
-                    <option value="@EPermission.SUBS">Subs</option>
-                    <option value="@EPermission.MODS">Moderators</option>
-                    <option value="@EPermission.ADMIN">Admins</option>
-                </InputSelect>
-            </label>
-        </p>
-        <p>
-            <label>
-                Cooldown timer:
-                <InputNumber @bind-Value="Command.Timer" />
-            </label>
+            Cooldown timer:
+            <InputNumber @bind-Value="Command.Timer" />
         </p>
         @if (InEditingMode)
         {
@@ -110,11 +104,9 @@ else
             }
             
             <p>
-                <label>
-                    New alias:
-                    <InputText @bind-Value="NewAlias.Alias" />
-                    <button type="submit">Add</button>
-                </label>
+                New alias: 
+                <InputText @bind-Value="NewAlias.Alias" />
+                <button type="submit">Add</button>
             </p>
         </EditForm>
     }

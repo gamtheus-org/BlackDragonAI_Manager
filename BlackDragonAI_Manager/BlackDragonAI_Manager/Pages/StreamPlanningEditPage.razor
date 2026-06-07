@@ -28,31 +28,31 @@ else
 
 @if (streamPlanning != null)
 {
-    <EditForm model="@streamPlanning" OnValidSubmit="Save">
+    <EditForm model="@streamPlanning" OnValidSubmit="Save" autocomplete="false">
         <DataAnnotationsValidator />
         <ValidationSummary />
         <div class="col-lg-12" style="justify-content: flex-start; flex-flow: row wrap; display: flex;">
             @* Time diff *@
             <p class="col-lg-4">
-                <label style="margin-right: 10px;">
+                <p style="margin-right: 10px;">
                     Time slot:
-                </label>
+                </p>
             
-                <RadzenDatePicker Style="width: 400px;" DateFormat="dd-MM" @bind-Value="streamPlanning.Date"></RadzenDatePicker >
+                <RadzenDatePicker class="date-picker-style" Style="width: 400px;" ShowTime="true" HoursStep="1" MinutesStep="15" DateFormat="dd-MM-yyyy HH:mm" @bind-Value="streamPlanning.Date" autocomplete="false"></RadzenDatePicker >
             </p>
             
             <p class="col-lg-4" style="width: fit-content; display: flex;"> 
-                <label style="margin-right: 10px;">
+                <p style="margin-right: 10px;">
                     Time slot: 
-                </label>
+                </p>
             
                 <InputText style="width: 400px;" @bind-Value="streamPlanning.TimeSlot" />
             </p>
             
             <p class="col-lg-4" style="width: fit-content; display: flex;">
-                <label style="margin-right: 10px;">
+                <p style="margin-right: 10px;">
                     Stream type: 
-                </label>
+                </p>
                         
                 <InputText style="width: 400px;" @bind-Value="streamPlanning.StreamType" />
             </p>
@@ -61,26 +61,26 @@ else
         <div class="col-lg-12" style="justify-content: flex-start; flex-flow: row wrap; display: flex;">
             @* game diff *@
             <p class="col-lg-4" style="width: fit-content; display: flex;">
-                <label style="margin-right: 10px;">
+                <p   style="margin-right: 10px;">
                     Game: 
-                </label>
+                </p>
                         
                 <InputText style="width: 400px;" @bind-Value="streamPlanning.Game" />
             </p>
                         
             <p class="col-lg-4" style="width: fit-content; display: flex;">
-                <label style="margin-right: 10px;">
+                <p style="margin-right: 10px;">
                     Game type: 
-                </label>
+                </p>
                                     
                 <InputText style="width: 400px;" @bind-Value="streamPlanning.GameType" />
             </p>
             
             <p class="col-lg-4" style="width: fit-content; display: flex;">
-                <label style="margin-right: 10px;">
+                <p style="margin-right: 10px;">
                     Trailer: 
                     
-                </label>
+                </p>
                                                 
                 <InputText style="width: 400px;" @bind-Value="streamPlanning.TrailerUri" />
             </p>
@@ -114,13 +114,15 @@ else
 
         this.streamPlanningId = long.Parse(streamPlanningIdRaw);
         this.isNew = streamPlanningId == 0;
-        streamPlanning = isNew ? new StreamPlanning() : await this.BlbApiHandler.GetStreamPlanningById(streamPlanningId);
+        streamPlanning = isNew ? new StreamPlanning() { Date = DateTime.Now} : await this.BlbApiHandler.GetStreamPlanningById(streamPlanningId);
     }
 
     private async Task Save()
     {
         if (isNew) await this.Create();
         else await this.Update();
+        
+        NavigationManager.NavigateTo("/streams");
     }
 
     private async Task Create()
@@ -128,6 +130,7 @@ else
         try
         {
             await this.BlbApiHandler.CreateStreamPlanning(streamPlanning);
+            NotificationManager.SetSuccessNotification("Successfully created the stream planning item");
         }
         catch (ApiException e)
         {
@@ -142,6 +145,7 @@ else
         try
         {
             await this.BlbApiHandler.UpdateStreamPlanning(streamPlanning);
+            NotificationManager.SetSuccessNotification("Successfully updated the stream planning");
         }
         catch (ApiException e)
         {
@@ -156,6 +160,7 @@ else
         try
         {
             await this.BlbApiHandler.DeleteStreamPlanning(streamPlanningId);
+            NotificationManager.SetSuccessNotification("Successfully deleted the stream planning");
             this.NavigationManager.NavigateTo("/streams");
         }
         catch (ApiException e)
