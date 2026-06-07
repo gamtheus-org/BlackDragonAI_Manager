@@ -14,9 +14,7 @@
         </li>
     }
 </ul>
-<EditForm model="@NewBannedTerm" OnValidSubmit="CreateBannedTerm">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<EditForm model="@NewBannedTerm" OnSubmit="CreateBannedTerm">
     @if (ErrorMessage != null)
     {
         <ul>
