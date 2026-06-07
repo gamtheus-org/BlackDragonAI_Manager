@@ -2,9 +2,7 @@
 @inject BlbApiHandler BlbApiHandler
 @inject NotificationManager NotificationManager
 
-<h3>Banned terms</h3>
-
-<h3 style="margin-top: 30px;">Aliases</h3>
+<h3 style="margin-top: 30px;">Banned terms</h3>
 <ul>
     @foreach (var bannedTerm in BannedTerms)
     {
@@ -52,6 +50,7 @@
     {
         BannedTerms.Remove(bannedTerm);
         await BlbApiHandler.SaveBannedTermsAsync(BannedTerms.ToArray());
+        NotificationManager.SetSuccessNotification("Removed banned terms");
     }
 
     public async Task CreateBannedTerm()
@@ -62,9 +61,10 @@
             return;
         }
 
-        BannedTerms.Add(NewBannedTerm);
         ErrorMessage = null;
+        BannedTerms.Add(NewBannedTerm);
         await BlbApiHandler.SaveBannedTermsAsync(BannedTerms.ToArray());
+        NotificationManager.SetSuccessNotification("Updated banned terms");
         NewBannedTerm = string.Empty;
     }
 }
