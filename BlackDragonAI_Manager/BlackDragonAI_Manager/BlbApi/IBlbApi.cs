@@ -82,6 +82,16 @@ namespace BlackDragonAI_Manager.BlbApi
         [Post("/streamplannings/discord/share")]
         Task SharePlanningUpdate([Header("X-Access-Token")] string authToken);
 
+        #region BannedTerms
+
+        [Put("/banned-terms")]
+        Task SaveBannedTerms([Header("X-Access-Token")] string authToken, string[] terms);
+
+        [Get("/banned-terms")]
+        Task<string[]> GetBannedTerms([Header("X-Access-Token")] string authToken);
+
+        #endregion
+
         [Post("/reconnect")]
         Task Reconnect([Header("X-Access-Token")] string authToken);
 

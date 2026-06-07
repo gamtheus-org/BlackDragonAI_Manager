@@ -125,6 +125,16 @@ namespace BlackDragonAI_Manager.BlbApi
         public async Task SharePlanningUpdate() => 
             await (await CheckAuthentication()).SharePlanningUpdate(this._jwt);
 
+        #region BannedTerms
+
+        public async Task SaveBannedTermsAsync(string[] terms) =>
+            await (await CheckAuthentication()).SaveBannedTerms(this._jwt, terms);
+
+        public async Task<string[]> GetBannedTermsAsync() =>
+            await (await CheckAuthentication()).GetBannedTerms(this._jwt);
+
+        #endregion
+
         public async Task<TwitchAuthInformation> GetAuthUrl() =>
             await (await CheckAuthentication()).GetAuthUrl(this._jwt);
 
